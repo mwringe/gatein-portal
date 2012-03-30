@@ -618,6 +618,13 @@
             <type>war</type>
          </dependency>
 
+         <!-- GateIn Device -->
+         <dependency>
+            <groupId>org.gatein.web</groupId>
+            <artifactId>device.redirection</artifactId>
+            <version>${project.version}</version>
+         </dependency>
+
          <!-- Reflext -->
          <dependency>
             <groupId>org.reflext</groupId>

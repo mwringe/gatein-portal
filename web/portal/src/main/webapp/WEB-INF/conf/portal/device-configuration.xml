@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
 
     Copyright (C) 2009 eXo Platform SAS.
@@ -19,26 +20,20 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<configuration
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd http://www.exoplaform.org/xml/ns/kernel_1_2.xsd"
+   xmlns="http://www.exoplaform.org/xml/ns/kernel_1_2.xsd">
 
-   <modelVersion>4.0.0</modelVersion>
+  <component>
+    <key>org.gatein.web.device.redirection.DeviceRedirectionService</key>
+    <type>org.gatein.web.device.redirection.implementation.DeviceRedirectionServiceImpl</type>
+    <init-params>
+      <value-param>
+        <name>device.config</name>
+        <value>${gatein.device.config}</value>
+      </value-param>
+    </init-params>
+  </component>
 
-   <parent>
-      <groupId>org.exoplatform.portal</groupId>
-      <artifactId>exo.portal.parent</artifactId>
-      <version>3.3.0-CR01-SNAPSHOT</version>
-   </parent>
-
-   <artifactId>exo.portal.web</artifactId>
-   <packaging>pom</packaging>
-
-   <name>GateIn Portal Web</name>
-
-   <modules>
-      <module>eXoResources</module>
-      <module>portal</module>
-      <module>rest</module>
-      <module>device</module>
-   </modules>
-
-</project>
+</configuration>

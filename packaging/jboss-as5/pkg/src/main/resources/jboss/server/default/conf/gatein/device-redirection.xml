@@ -1,0 +1,36 @@
+<device-configuration>
+  <device-redirects>
+    <device-redirect>
+      <origin-site>classic</origin-site>
+      <redirects>
+        <redirect>
+          <redirect-site>mobile</redirect-site>
+          <conditions>
+            <condition>
+              <!-- default list of user agent strings to check for -->
+              <user-agent>
+                <contains>(?i)mobile</contains>
+                <contains>(?i)android</contains>
+                <contains>(?i)ip[ad|hone|od]</contains>
+                <contains>(?i)phone</contains>
+              </user-agent>
+            </condition>
+            <condition>
+              <!-- We should really have a list here for user-agent does not contain to block out main _desktop_ browsers so that we only fall back to browser we don't know about, which may be mobile or not -->
+              <user-agent>
+                <does-not-contain>(?i)firefox</does-not-contain>
+              </user-agent>
+              <device-property>
+                <property-name>touch.enabled</property-name>
+                <equals>true</equals>
+              </device-property>
+            </condition>
+          </conditions>
+          <mappings>
+            <use-node-name-matching>true</use-node-name-matching>
+          </mappings>
+        </redirect>
+      </redirects>
+    </device-redirect>
+  </device-redirects>
+</device-configuration>

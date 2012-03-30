@@ -516,6 +516,12 @@
          <artifactId>exo.portal.gadgets-core</artifactId>
       </dependency>
 
+      <!-- Device Detection -->
+      <dependency>
+         <groupId>org.gatein.web</groupId>
+         <artifactId>device.redirection</artifactId>
+      </dependency>
+
       <!-- Provided -->
       <dependency>
         <groupId>javax.inject</groupId>

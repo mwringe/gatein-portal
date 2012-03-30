@@ -25,20 +25,25 @@
 
    <parent>
       <groupId>org.exoplatform.portal</groupId>
-      <artifactId>exo.portal.parent</artifactId>
+      <artifactId>exo.portal.web</artifactId>
       <version>3.3.0-CR01-SNAPSHOT</version>
    </parent>
 
-   <artifactId>exo.portal.web</artifactId>
-   <packaging>pom</packaging>
+   <groupId>org.gatein.web</groupId>
+   <artifactId>device.redirection</artifactId>
+   <packaging>jar</packaging>
 
-   <name>GateIn Portal Web</name>
+   <name>GateIn Portal Device Detection and Redirection Component</name>
 
-   <modules>
-      <module>eXoResources</module>
-      <module>portal</module>
-      <module>rest</module>
-      <module>device</module>
-   </modules>
+   <dependencies>
+     <dependency>
+       <groupId>org.exoplatform.portal</groupId>    
+       <artifactId>exo.portal.component.common</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>org.exoplatform.portal</groupId>
+       <artifactId>exo.portal.webui.portal</artifactId>
+     </dependency>
+   </dependencies>
 
 </project>

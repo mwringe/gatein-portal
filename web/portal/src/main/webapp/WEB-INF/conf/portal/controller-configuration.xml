@@ -114,6 +114,11 @@
       <set-method>register</set-method>
       <type>org.exoplatform.portal.application.StaticResourceRequestHandler</type>
    </component-plugin>
+       <component-plugin>
+      <name>DeviceRedirectRequestHandler</name>
+      <set-method>register</set-method>
+      <type>org.gatein.web.device.redirection.DeviceRedirectRequestHandler</type>
+   </component-plugin>
   </external-component-plugins>
 
 </configuration>
