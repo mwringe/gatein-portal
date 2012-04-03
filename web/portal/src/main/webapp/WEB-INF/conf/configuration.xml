@@ -59,5 +59,4 @@
    <import>war:/conf/portal/controller-configuration.xml</import>
    <import>war:/conf/portal/web-configuration.xml</import>
    <import>war:/conf/portal/gadget-configuration.xml</import>
-   <import>war:/conf/portal/device-configuration.xml</import>
 </configuration>
