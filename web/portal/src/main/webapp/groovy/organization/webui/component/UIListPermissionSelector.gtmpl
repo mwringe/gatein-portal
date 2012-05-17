@@ -1,18 +1,18 @@
 <%	
 	import org.exoplatform.webui.form.UIFormPopupWindow;
 	import org.exoplatform.webui.form.UIFormGrid;
-	import org.exoplatform.webui.form.UIFormCheckBoxInput;
+	import org.exoplatform.webui.form.input.UICheckBoxInput;
 	
 	def rcontext = _ctx.getRequestContext();
  	def uiPublicMode = uicomponent.getChildById("publicMode");
-	rcontext.getJavascriptManager().importJavascript('eXo.webui.UIPopupWindow');
+	rcontext.getJavascriptManager().loadScriptResource('webui');
 %>
 <div id="<%=uicomponent.getId();%>" class="UIAccessGroup">
 	<div class="PublicCheck">
 		<table class="UIFormGrid">
 			<tr>
 				<td class="FieldLabel"><%=uicomponent.getLabel(uiPublicMode.getId())%></td>
-				<td class="FieldComponent"><%uicomponent.renderChild(UIFormCheckBoxInput.class)%></td>
+				<td class="FieldComponent"><%uicomponent.renderChild(UICheckBoxInput.class)%></td>
 			</tr>
 		</table>
 	</div>

@@ -13,7 +13,7 @@
 		String id = uicomponent.getParent().getId();
 		
 		JavascriptManager jsmanager = _ctx.getRequestContext().getJavascriptManager();
-		jsmanager.importJavascript('eXo.webui.UIRightClickPopupMenu');
+		jsmanager.loadScriptResource('webui-ext');
     popupMenu = uiPopupMenu.getJSOnclickShowPopup("", "AddNode,EditNavigation,SaveNavigation,DeleteNavigation");
 		jsmanager.addJavascript("eXo.webui.UIRightClickPopupMenu.disableContextMenu('"+id+"');");
 		uicomponent.renderUIComponent(uiPopupMenu);
@@ -32,7 +32,6 @@
 				<div class="UIContainerConfigOptions ItemSelectorAncestor"> 
 					<div class="ContainerConfigOptions">
 						<a class="AddNavigationIcon" href ="<%=uicomponent.event("CreateNavigation"); %>" title="<%=_ctx.appRes("UIPageNodeSelector.tooltip.newPageNavigation")%>"><span></span></a>
-						<div class="ClearLeft" style="height: 0px"><span></span></div>	
 						<div class="UIVerticalSlideTabs ItemList CategoryContainer" style="padding: 1px;">
 							<% uicomponent.renderChild(UITree.class);%>
 						</div>

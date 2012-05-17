@@ -46,6 +46,7 @@ import org.exoplatform.webui.event.Event;
 import org.exoplatform.webui.event.Event.Phase;
 import org.exoplatform.webui.event.EventListener;
 import org.exoplatform.webui.form.*;
+import org.exoplatform.webui.form.input.UICheckBoxInput;
 import org.exoplatform.webui.form.validator.NotHTMLTagValidator;
 import org.exoplatform.webui.form.validator.ExpressionValidator;
 import org.exoplatform.webui.form.validator.MandatoryValidator;
@@ -94,23 +95,20 @@ public class UIPortletForm extends UIFormTabPane
       UIFormInputSet uiPortletPrefSet = new UIFormInputSet(FIELD_PORTLET_PREF).setRendered(false);
       addUIFormInput(uiPortletPrefSet);
       UIFormInputSet uiSettingSet = new UIFormInputSet("PortletSetting");
-      uiSettingSet.
-         /*addUIFormInput(new UIFormStringInput("id", "id", null).
-                     addValidator(MandatoryValidator.class).setEditable(false)).
-      addUIFormInput(new UIFormStringInput("windowId", "windowId", null).setEditable(false)).*/
-            addUIFormInput(new UIFormInputInfo("displayName", "displayName", null)).addUIFormInput(
-         new UIFormStringInput("title", "title", null).addValidator(StringLengthValidator.class, 3, 60).addValidator(NotHTMLTagValidator.class,
-               "UIPortletForm.msg.InvalidPortletTitle"))
-         .addUIFormInput(
-            new UIFormStringInput("width", "width", null).addValidator(ExpressionValidator.class, "(^([1-9]\\d*)(px$|$))?",
-               "UIPortletForm.msg.InvalidWidthHeight")).addUIFormInput(
-         new UIFormStringInput("height", "height", null).addValidator(ExpressionValidator.class,
-            "(^([1-9]\\d*)(px$|$))?", "UIPortletForm.msg.InvalidWidthHeight")).addUIFormInput(
-         new UIFormCheckBoxInput("showInfoBar", "showInfoBar", false)).addUIFormInput(
-         new UIFormCheckBoxInput("showPortletMode", "showPortletMode", false)).addUIFormInput(
-         new UIFormCheckBoxInput("showWindowState", "showWindowState", false)).addUIFormInput(
-                  new UIFormTextAreaInput("description", "description", null).addValidator(
-                        NullFieldValidator.class).addValidator(NotHTMLTagValidator.class, "UIPortletForm.msg.InvalidPortletDescription"));
+      uiSettingSet
+         .addUIFormInput(new UIFormInputInfo("displayName", "displayName", null))
+         .addUIFormInput(new UIFormStringInput("title", "title", null)
+            .addValidator(StringLengthValidator.class, 3, 60)
+            .addValidator(NotHTMLTagValidator.class, "UIPortletForm.msg.InvalidPortletTitle"))
+         .addUIFormInput(new UIFormStringInput("width", "width", null)
+            .addValidator(ExpressionValidator.class, "(^([1-9]\\d*)px$)?", "UIPortletForm.msg.InvalidWidthHeight"))
+         .addUIFormInput(new UIFormStringInput("height", "height", null)
+            .addValidator(ExpressionValidator.class, "(^([1-9]\\d*)px$)?", "UIPortletForm.msg.InvalidWidthHeight"))
+         .addUIFormInput(new UICheckBoxInput("showInfoBar", "showInfoBar", false))
+         .addUIFormInput(new UICheckBoxInput("showPortletMode", "showPortletMode", false))
+         .addUIFormInput(new UICheckBoxInput("showWindowState", "showWindowState", false))
+         .addUIFormInput(new UIFormTextAreaInput("description", "description", null)
+            .addValidator(NotHTMLTagValidator.class, "UIPortletForm.msg.InvalidPortletDescription"));
       addUIFormInput(uiSettingSet);
       UIFormInputIconSelector uiIconSelector = new UIFormInputIconSelector("Icon", "icon");
       addUIFormInput(uiIconSelector);
@@ -372,7 +370,8 @@ public class UIPortletForm extends UIFormTabPane
          uiPortlet.putSuitedTheme(null, uiThemeSelector.getChild(UIItemThemeSelector.class).getSelectedTheme());
          uiPortletForm.savePreferences();
          UIMaskWorkspace uiMaskWorkspace = uiPortletForm.getParent();
-         uiMaskWorkspace.setUIComponent(null);
+         PortalRequestContext pcontext = (PortalRequestContext)event.getRequestContext();
+         uiMaskWorkspace.createEvent("Close", Phase.DECODE, pcontext).broadcast();
          if (uiPortletForm.hasEditMode())
          {
             uiPortlet.setCurrentPortletMode(PortletMode.VIEW);
@@ -406,9 +405,7 @@ public class UIPortletForm extends UIFormTabPane
             uiPortlet.setHeight(height);
          }
 
-         PortalRequestContext pcontext = (PortalRequestContext)event.getRequestContext();
-         pcontext.getJavascriptManager().addJavascript("eXo.portal.UIPortal.changeComposerSaveButton();");
-         pcontext.addUIComponentToUpdateByAjax(uiMaskWorkspace);
+         pcontext.getJavascriptManager().addJavascript("eXo.portal.PortalComposer.toggleSaveButton();");
          UIPortalApplication uiPortalApp = uiPortlet.getAncestorOfType(UIPortalApplication.class);
          UIWorkingWorkspace uiWorkingWS = uiPortalApp.getChildById(UIPortalApplication.UI_WORKING_WS_ID);
          pcontext.addUIComponentToUpdateByAjax(uiWorkingWS);
@@ -430,9 +427,7 @@ public class UIPortletForm extends UIFormTabPane
          PortalRequestContext pcontext = (PortalRequestContext)event.getRequestContext();
          //add by Pham Dinh Tan
          UIMaskWorkspace uiMaskWorkspace = uiPortalApp.getChildById(UIPortalApplication.UI_MASK_WS_ID);
-         uiMaskWorkspace.setUIComponent(null);
-         uiMaskWorkspace.setWindowSize(-1, -1);
-         pcontext.addUIComponentToUpdateByAjax(uiMaskWorkspace);
+         uiMaskWorkspace.broadcast(event, Phase.DECODE);
          pcontext.ignoreAJAXUpdateOnPortlets(true);
       }
    }

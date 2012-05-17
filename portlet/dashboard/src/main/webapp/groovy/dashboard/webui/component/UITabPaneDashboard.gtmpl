@@ -14,9 +14,6 @@
 	PortalURL nodeURL = nodeurl();
 
 	def selectedNode = Util.getUIPortal().getSelectedUserNode();
-	
-	JavascriptManager jsManager = pcontext.getJavascriptManager();
-	jsManager.importJavascript("eXo.webui.UITabbedDashboard");
 %>
 <div id="$uicomponent.id" class="UITabPaneDashboard UIHorizontalTabs ClearFix">
 			<%
@@ -46,5 +43,5 @@
 			</div>
 				<%} %>	
 	<% } %>
-	<a class="AddDashboard" onclick="eXo.webui.UITabbedDashboard.createTabDashboard(this)"></a>										
+	<a class="AddDashboard" onclick="eXo.webui.UITabbedDashboard.showAddTabInput(this)"></a>
 </div>

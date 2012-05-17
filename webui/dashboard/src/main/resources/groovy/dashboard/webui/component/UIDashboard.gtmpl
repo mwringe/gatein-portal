@@ -2,7 +2,8 @@
   import org.exoplatform.web.application.JavascriptManager;
   
   def rcontext = _ctx.getRequestContext() ;
-  JavascriptManager jsmanager = rcontext.getJavascriptManager(); 
+  JavascriptManager jsmanager = rcontext.getJavascriptManager();
+  jsmanager.loadScriptResource("dashboard");
   jsmanager.addCustomizedOnLoadScript("eXo.gadget.UIGadget.SaveTitle='" + _ctx.appRes("UIDashboardContainer.label.SaveTitle") + "';");
   jsmanager.addCustomizedOnLoadScript("eXo.gadget.UIGadget.CancelTitle='" + _ctx.appRes("UIDashboardContainer.label.CancelTitle") + "';");
   jsmanager.addCustomizedOnLoadScript("eXo.gadget.UIGadget.Cache='" + _ctx.appRes("UIDashboardContainer.label.Cache") + "';");
@@ -11,12 +12,11 @@
   def maxiGadget = uicomponent.getMaximizedGadget(); 
 %>
 <div id="$uicomponent.id" class="UIDashboard">
-	<div class="DashboardContainer <%=maxiGadget == null ? "" : "Maximized"%>">
+	<div class="ClearFix DashboardContainer <%=maxiGadget == null ? "" : "Maximized"%>">
 	<%
 		if(maxiGadget == null || !maxiGadget.isRendered()) {
 			uicomponent.renderChildren(); 
 	%>
-			<div class="ClearLeft"><span></span></div>
 	<%} else {
 			uicomponent.renderUIComponent(maxiGadget);	
 		}%>

@@ -17,18 +17,19 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-function UIDashboardUtil() {
+eXo.webui.UIDashboardUtil = {
 
-	UIDashboardUtil.prototype.findPosX = function(obj) {
-	  var curleft = 0;
+	findPosX : function(obj) {
+	  var curleft = 0, browser = eXo.core.Browser;
 	  var uiWorkspaceContainer = document.getElementById("UIWorkspaceContainer");
-	  var uiWorkingWorkspace = document.getElementById("UIWorkingWorkspace");
+	  var uiWorkingWorkspace = document.getElementById("UIWorkingWorkspace");	  
 	  while (obj) {
 	  	if(uiWorkspaceContainer!=null && uiWorkspaceContainer.style.display!="none"
-	  					 && eXo.core.Browser.getBrowserType()=="ie"){
+	  					 && browser.isIE()){
 	  		var uiPageDesktop = document.getElementById("UIPageDesktop");
-	  		if( (uiPageDesktop!=null && eXo.core.DOMUtil.hasClass(obj,"UIPageDesktop") && eXo.core.Browser.isIE7()) 
-	  					|| (uiPageDesktop==null && eXo.core.DOMUtil.hasClass(obj,"PORTLET-FRAGMENT")) ){
+        var jqObj = gj(obj);
+	  		if( (uiPageDesktop!=null && jqObj.hasClass("UIPageDesktop") && browser.isIE7())
+	  					|| (uiPageDesktop==null && jqObj.hasClass("PORTLET-FRAGMENT")) ){
 	  			curleft += (obj.offsetLeft - uiWorkingWorkspace.offsetLeft);
 	  			obj = obj.offsetParent ;
 	  			continue;
@@ -38,76 +39,12 @@ function UIDashboardUtil() {
 	    obj = obj.offsetParent ;
 	  }
 	  return curleft ;
-	};
+	},
 	
-	UIDashboardUtil.prototype.findPosY = function(obj) {
-	  var curtop = 0 ;
-	  while (obj) {
-	    curtop += obj.offsetTop ;
-	    obj = obj.offsetParent ;
-	  }
-	  return curtop ;
-	};
-	
-	UIDashboardUtil.prototype.findMouseRelativeX = function (object, e){
-		var posx = -1 ;
-		var posXObject = eXo.webui.UIDashboardUtil.findPosX(object) ;
-		if (!e) e = window.event ;
-		if (e.pageX || e.pageY) {
-		  posx = e.pageX - posXObject ;
-		} else if (e.clientX || e.clientY) {
-		  posx = e.clientX + document.body.scrollLeft - posXObject ;
-		}
-		return posx ;
-	};
-	
-	UIDashboardUtil.prototype.findMouseRelativeY = function(object, e) {
-	  var posy = -1 ;
-	  var posYObject = eXo.webui.UIDashboardUtil.findPosY(object) ;
-	  if (!e) e = window.event ;
-	  if (e.pageY) {
-	    posy = e.pageY - posYObject ;
-	  } else if (e.clientX || e.clientY) {
-	    //IE 6
-	    if (document.documentElement && document.documentElement.scrollTop) {
-	      posy = e.clientY + document.documentElement.scrollTop - posYObject ;
-	    } else {
-	      posy = e.clientY + document.body.scrollTop - posYObject ;
-	    }
-	  }
-	  return  posy ;
-	};
-	
-	UIDashboardUtil.prototype.findPosXInContainer = function(obj, container) {
-  	var objX =  eXo.webui.UIDashboardUtil.findPosX(obj) ;
-  	var containerX =  eXo.webui.UIDashboardUtil.findPosX(container) ;  
-	  return (objX - containerX) ;
-	};
-
-	UIDashboardUtil.prototype.findPosYInContainer = function(obj, container) {
-	  var objY = eXo.webui.UIDashboardUtil.findPosY(obj) ;
-	  var containerY =  eXo.webui.UIDashboardUtil.findPosY(container) ;
-	  return (objY - containerY) ;
-	}; 
-	
-	UIDashboardUtil.prototype.setPositionInContainer = function(container, component, posX, posY) {
-		var offsetX = component.offsetLeft ;
-		var offsetY = component.offsetTop ;
-	
-		var posXInContainer = eXo.webui.UIDashboardUtil.findPosXInContainer(component, container) ;
-		var posYInContainer = eXo.webui.UIDashboardUtil.findPosYInContainer(component, container) ;
-	
-		var deltaX = posX - (posXInContainer - offsetX) ;
-		var deltaY = posY - (posYInContainer - offsetY) ;
-	
-		component.style.left = deltaX + "px" ;
-		component.style.top = deltaY + "px" ;
-	}; 
-	
-	UIDashboardUtil.prototype.isIn = function(x, y, component) {
+	isIn : function(x, y, component) {
 	  var componentLeft = eXo.webui.UIDashboardUtil.findPosX(component);
 	  var componentRight = componentLeft + component.offsetWidth ;
-	  var componentTop = eXo.webui.UIDashboardUtil.findPosY(component) ;
+	  var componentTop = gj(component).offset().top;
 	  var componentBottom = componentTop + component.offsetHeight ;
 	  var isOver = false ;
 
@@ -118,28 +55,58 @@ function UIDashboardUtil() {
 	  }
 	  
 	  return isOver ;
-	};
+	},
+
+  isInColumn : function(column, x, scrollLeft)
+  {
+    var left = this.findPosX(column[0]) - scrollLeft;
+    return left <= x && x < left + column[0].offsetWidth;
+  },
 	
-	UIDashboardUtil.prototype.findColIndexInDashboard = function(dragObj){
-		var col = dragObj.parentNode;
-		if(col==null) return null;
-		var dashboardContainer = eXo.core.DOMUtil.findAncestorByClass(col, "DashboardContainer");
-		var columns = eXo.core.DOMUtil.findDescendantsByClass(dashboardContainer, "div", "UIColumn");
-		for(var i=0; i<columns.length; i++){
-			if(col.id == columns[i].id){
-				return i;
-			}
-		}
-	};
+	findColIndexInDashboard : function(dragObj){
+    var index = 0;
+    gj(dragObj).parent().prevAll("div.UIColumn").each(function()
+    {
+      index++;
+    });
+    return index;
+	},
+
+  findContainingColumn : function(gadgetCont, x)
+  {
+    var column;
+    var scrollLeft = gadgetCont.scrollLeft();
+    gadgetCont.find("div.UIColumn").each(function()
+    {
+      var left = eXo.webui.UIDashboardUtil.findPosX(this) - scrollLeft;
+      if(left <= x && x < left + this.offsetWidth)
+      {
+        column = gj(this);
+        return false;
+      }
+    });
+
+    return column;
+  },
 	
-	UIDashboardUtil.prototype.findRowIndexInDashboard = function(dragObj){
-		var modules = eXo.core.DOMUtil.getChildrenByTagName(dragObj.parentNode, "div");
-		for(var i=0; i<modules.length; i++){
-			if(modules[i].id == dragObj.id) return i;
-		}
-	};
-	
-	UIDashboardUtil.prototype.createRequest = function(componentId, action, params){
+	findRowIndexInDashboard : function(dragObj){
+    var row = 0;
+    gj(dragObj).prevAll("div").each(function()
+    {
+      if(this.id == dragObj.id)
+      {
+        return false;
+      }
+      else
+      {
+        row++;
+      }
+    });
+
+    return row;
+	},
+
+	createRequest : function(componentId, action, params){
 		var url = eXo.env.server.portalBaseURL;
 		url += '?portal:componentId=' + componentId +
 							'&portal:type=action&uicomponent=UIDashboard&op=' + action ;
@@ -151,7 +118,5 @@ function UIDashboardUtil() {
 	    }
 	  }
 		return url;
-	};
+	}
 };
-
-eXo.webui.UIDashboardUtil = new UIDashboardUtil();

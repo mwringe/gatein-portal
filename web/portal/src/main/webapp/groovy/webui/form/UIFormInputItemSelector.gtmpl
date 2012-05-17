@@ -1,9 +1,6 @@
-<%  import  org.exoplatform.webui.form.UIForm; %>	
 <%
-	String onMouseOver = "eXo.webui.UIItemSelector.onOver(this, true)";
-	String onMouseOut = "eXo.webui.UIItemSelector.onOver(this, false)";
-	String onClick = "eXo.webui.UIItemSelector.onClick(this)";
-	
+  import  org.exoplatform.webui.form.UIForm;
+
 	options = uicomponent.getItemCategories();
 	UIForm form = uicomponent.getAncestorOfType(UIForm.class);	
 %>
@@ -12,10 +9,9 @@
 		<input type="hidden" name="$uicomponent.name" value ="">
 		<%/*Begin ItemList*/%>
 		<div class="ItemListContainer">
-			<div class="ItemListTitle">
+			<div class="ItemListTitle ClearFix">
 				<div class="TitleIcon ItemListIcon"><span></span></div>
 				<div class="Title"><%=_ctx.appRes(uicomponent.getName() + ".title")%></div>
-				<div class="ClearLeft"><span></span></div>
 			</div>
 			<div class="ItemList">
 				<%
@@ -25,7 +21,7 @@
 						String submitEvent = "eXo.webui.UIForm.submitEvent('$form.id','SelectItemOption', '')";
 						if (opt.isSelected()) itemSelected = "SelectedItem Item" ;
 				 %>
-						<div class="$itemSelected" onmouseover="$onMouseOver" onmouseout="$onMouseOut" onclick="$onClick;$setHiddenValue;$submitEvent">
+						<div class="$itemSelected" onmouseover="eXo.webui.UIItemSelector.onOver(this, true)" onmouseout="eXo.webui.UIItemSelector.onOver(this, false)" onclick="eXo.webui.UIItemSelector.onClick(this);$setHiddenValue;$submitEvent">
 							<div class="LeftItem">
 								<div class="RightItem">	
 									<div class="ItemTitle"><%=_ctx.appRes(opt.getName() + ".label")%></div>
@@ -39,10 +35,9 @@
 					
 		<%/*Begin ItemDetailList*/%>
 		<div class="ItemDetailList">
-			<div class="ItemDetailTitle">
+			<div class="ItemDetailTitle ClearFix">
 				<div class="TitleIcon ViewListIcon"><span></span></div>
 				<div class="Title"><%=_ctx.appRes(uicomponent.getName() + ".left.title")%></div>
-				<div class="ClearLeft"><span></span></div>
 			</div>
 			<%		 
 				for(opt in options) {

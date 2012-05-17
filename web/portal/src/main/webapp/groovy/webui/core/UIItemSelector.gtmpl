@@ -1,8 +1,6 @@
-<%import  org.exoplatform.webui.core.UIContainer;%>	
 <%
-	String onMouseOver = "eXo.webui.UIItemSelector.onOver(this, true)";
-	String onMouseOut = "eXo.webui.UIItemSelector.onOver(this, false)";
-		
+  import  org.exoplatform.webui.core.UIContainer;
+
 	categories = uicomponent.getItemCategories();
 	UIContainer uicontainer = uicomponent.getAncestorOfType(UIContainer.class);	
 %>
@@ -10,20 +8,18 @@
 	<div class="RightColumnStyle" style="width: 99.5%;">
 		<%/*Begin ItemList*/%>
 		<div class="ItemListContainer">
-			<div class="ItemListTitle">
+			<div class="ItemListTitle ClearFix">
 				<div class="TitleIcon ItemListIcon"><span></span></div>
 				<div class="Title"><%=_ctx.appRes(uicomponent.getName() + ".title")%></div>
-				<div class="ClearLeft"><span></span></div>
 			</div>
 			<div class="ItemList">
 				<%						
 					for(category in categories) {							
 						String itemSelected = "Item";
-						String onClick = "eXo.webui.UIItemSelector.onClickCategory(this, '$uicontainer.name', '$uicomponent.name', '$category.name')";
-																				
+
 						if (category.isSelected()) itemSelected = "SelectedItem Item";							
 				 %>
-						<div class="$itemSelected" onmouseover="$onMouseOver" onmouseout="$onMouseOut" onclick="$onClick">
+						<div class="$itemSelected" onmouseover="eXo.webui.UIItemSelector.onOver(this, true)" onmouseout="eXo.webui.UIItemSelector.onOver(this, false)" onclick="eXo.webui.UIItemSelector.onClickCategory(this, '$uicontainer.name', '$uicomponent.name', '$category.name')">
 							<div class="LeftItem">
 								<div class="RightItem">	
 								<%
@@ -49,10 +45,9 @@
 						
 		<%/*Begin ItemDetailList*/%>
 		<div class="ItemDetailList">
-			<div class="ItemDetailTitle">
+			<div class="ItemDetailTitle ClearFix">
 				<div class="TitleIcon ViewListIcon"><span></span></div>
 				<div class="Title"><%=_ctx.appRes(uicomponent.getName() + ".left.title")%></div>
-				<div class="ClearLeft"><span></span></div>
 			</div>
 			<div class="ItemDetailContainer">
 			<%					

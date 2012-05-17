@@ -137,13 +137,11 @@ public class UIContainerForm extends UIFormTabPane
          PortalRequestContext pcontext = (PortalRequestContext)event.getRequestContext();
 
          UIMaskWorkspace uiMaskWorkspace = uiForm.getParent();
-         uiMaskWorkspace.setUIComponent(null);
-
-         event.getRequestContext().addUIComponentToUpdateByAjax(uiMaskWorkspace);
+         uiMaskWorkspace.createEvent("Close", Phase.DECODE, pcontext).broadcast();
 
          UIPortalApplication uiPortalApp = Util.getUIPortalApplication();
          UIWorkingWorkspace uiWorkingWS = uiPortalApp.getChildById(UIPortalApplication.UI_WORKING_WS_ID);
-         pcontext.getJavascriptManager().addJavascript("eXo.portal.UIPortal.changeComposerSaveButton();");
+         pcontext.getJavascriptManager().addJavascript("eXo.portal.PortalComposer.toggleSaveButton();");
          pcontext.addUIComponentToUpdateByAjax(uiWorkingWS);
          pcontext.ignoreAJAXUpdateOnPortlets(true);
       }

@@ -4,14 +4,14 @@
 	
 	def rContext = _ctx.getRequestContext();
 	JavascriptManager jsmanager = rContext.getJavascriptManager();
-	jsmanager.importJavascript("eXo.portal.UIPortal");			
+	jsmanager.loadScriptResource("portal");			
  %>
 
 	
 	<%uicomponent.renderChildren(); %>
 
 <div class="SampleWebUI" style="width: 260px;">
-	<div class="CollapseIcon ClearFix" onclick="eXo.portal.UIPortal.collapseExpand(this);">
+	<div class="CollapseIcon ClearFix" onclick="eXo.webui.UISampleTOC.collapseExpand(this);">
 		<a class='NodeIcon DefaultPageIcon' href='javascript:void(0);'>WebUI Demo</a>
 	</div>
 	<div class="ChildrenContainer">
@@ -36,7 +36,7 @@
 		<div class="Node ClearFix">
 			<div class="">
 				<div class="ClearFix">
-					<div class="CollapseIcon ClearFix" onclick="eXo.portal.UIPortal.collapseExpand(this);">
+					<div class="CollapseIcon ClearFix" onclick="eXo.webui.UISampleTOC.collapseExpand(this);">
 						<a class="NodeIcon DefaultPageIcon" href=#>UIPopup</a><br>
 					</div>
 					<div class="ChildrenContainer" style="display:block;">

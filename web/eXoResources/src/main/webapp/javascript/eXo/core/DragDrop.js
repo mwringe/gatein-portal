@@ -17,177 +17,86 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
 
-function DragDropEvent(clickObject, dragObject) {
-  this.clickObject = clickObject ;
-  if (dragObject && dragObject != null) {
- 		this.dragObject = dragObject ;
-  } else {
-  	this.dragObject = clickObject ;
-  }
-  this.foundTargetObject = null ;
-  this.lastFoundTargetObject = null ;
-  this.junkMove = false ;
-  
- 	if(eXo.core.I18n.isLT() && isNaN(parseInt(this.dragObject.style.left))) this.dragObject.style.left = "0px" ;
- 	if(eXo.core.I18n.isRT() && isNaN(parseInt(this.dragObject.style.right))) this.dragObject.style.right = "0px" ;
-	if(isNaN(parseInt(this.dragObject.style.top))) this.dragObject.style.top = "0px" ;
-} ;
-
-DragDropEvent.prototype.update = function(foundTargetObject, junkMove) {
-  this.lastFoundTargetObject = this.foundTargetObject ;
-  this.foundTargetObject = foundTargetObject ;
-  this.junkMove = junkMove ;
-}
-
-DragDropEvent.prototype.isJunkMove = function() {
-  return this.junkMove ;
-} ;
-
-/*************************************************************************************/
-
 function DragDrop() {
-  this.dropableTargets = null ;
-  this.dndEvent = null ;
-
-  this.initCallback = null ;
-  this.dragCallback = null ;
-  this.dropCallback = null ;
-  this.destroyCallback = null ;
-  this.isJunkMoveCallback = null ;
-} ;
-
-DragDrop.prototype.init = function(dropableTargets, clickObject, dragObject, evt) {
-	if(evt && evt.preventDefault) evt.preventDefault();
-  eXo.core.Mouse.init(evt) ;
-  this.dropableTargets = dropableTargets ;
-  
-  var dndEvent = this.dndEvent = new DragDropEvent(clickObject, dragObject) ;
-	document.onmousemove	= this.onMouseMove ;
-	document.onmouseup		= this.onDrop ;
-	document.onmouseout = this.onCancel ;
-	document.onkeypress = this.onKeyPressEvt ;
+	var obj = null;
 	
-  if(this.initCallback != null) {
-    this.initCallback(dndEvent) ;
-  }
-} ;
+	DragDrop.prototype.init = function(o, oRoot) {
+		var jObj = gj(o);
+		jObj.off("mousedown");
+		jObj.on("mousedown", eXo.core.DragDrop.start);
 
-DragDrop.prototype.onKeyPressEvt = function(evt) {
-	if(!evt) evt = window.event ;
-	if(evt.keyCode == 27) eXo.core.DragDrop.onDrop(evt) ;
-}
-
-DragDrop.prototype.onMouseMove = function(evt) {
-  eXo.core.Mouse.update(evt) ;
-	var dndEvent = eXo.core.DragDrop.dndEvent ;
-  dndEvent.backupMouseEvent = evt ;
-	var dragObject =  dndEvent.dragObject ;
-
-	var y = parseInt(dragObject.style.top) ;
-	var x = eXo.core.I18n.isRT() ? parseInt(dragObject.style.right) : parseInt(dragObject.style.left) ;
-
-	if(eXo.core.I18n.isLT()) dragObject.style["left"] =  x + eXo.core.Mouse.deltax + "px" ;
-	else dragObject.style["right"] =  x - eXo.core.Mouse.deltax + "px" ;
-	dragObject.style["top"]  =  y + eXo.core.Mouse.deltay + "px" ;
+		o.root = oRoot && oRoot != null ? oRoot : o ;
+		
+		o.root.onDragStart = new Function();
+		o.root.onDragEnd = new Function();
+		o.root.onDrag = new Function();
+	};
 	
-  if(eXo.core.DragDrop.dragCallback != null) {
-    var foundTarget = eXo.core.DragDrop.findDropableTarget(dndEvent, eXo.core.DragDrop.dropableTargets, evt) ;
-    var junkMove =  eXo.core.DragDrop.isJunkMove(dragObject, foundTarget) ;
-    dndEvent.update(foundTarget, junkMove) ;
-    eXo.core.DragDrop.dragCallback(dndEvent) ;
-  }
-    
-	return false ;
-} ;
-
-DragDrop.prototype.onDrop = function(evt) {
-   if(!evt) evt = window.event ;
-   /* should not remove this or move this line to  destroy since the onMouseMove method keep calling */
-   if(eXo.core.DragDrop.dropCallback != null) {
-      var dndEvent = eXo.core.DragDrop.dndEvent ;
-      dndEvent.backupMouseEvent = evt ;
-      var dragObject = dndEvent.dragObject ;
-
-      var foundTarget = eXo.core.DragDrop.findDropableTarget(dndEvent, eXo.core.DragDrop.dropableTargets, evt) ;
-      var junkMove =  eXo.core.DragDrop.isJunkMove(dragObject, foundTarget) ;
-
-      dndEvent.update(foundTarget, junkMove) ;
-      eXo.core.DragDrop.dropCallback (dndEvent) ;
-   }
-   eXo.core.DragDrop.destroy() ;
-} ;
-
-DragDrop.prototype.onCancel = function(evt) {
-	if(eXo.core.DragDrop.cancelCallback) eXo.core.DragDrop.cancelCallback(eXo.core.DragDrop.dndEvent);
-} ;
-
-DragDrop.prototype.destroy = function() {
-  if(this.destroyCallback != null) {
-    this.destroyCallback(this.dndEvent) ;
-  }
-
-	document.onmousemove	= null ;
-  document.onmouseup = null ;
-  document.onmouseout = null ;
-  document.onkeypress = null ;
-
-  this.dndEvent = null ;
-  this.dropableTargets = null ;
-
-  this.initCallback = null ;
-  this.dragCallback = null ;
-  this.dropCallback = null ;
-  this.destroyCallback = null ;
-  this.isJunkMoveCallback = null ;
-} ;
-  
-DragDrop.prototype.findDropableTarget = function(dndEvent, dropableTargets, mouseEvent) {
-  if(dropableTargets == null) return null ;
-  var mousexInPage = eXo.core.Browser.findMouseXInPage(mouseEvent) ;
-  var mouseyInPage = eXo.core.Browser.findMouseYInPage(mouseEvent) ;
-  
-	var clickObject = dndEvent.clickObject ;
-	var dragObject = dndEvent.dragObject ;
-  var foundTarget = null ;
-  var len = dropableTargets.length ;
-  for(var i = 0 ; i < len ; i++) {
-    var ele =  dropableTargets[i] ;
-
-    if(dragObject != ele && this.isIn(mousexInPage, mouseyInPage, ele)) {
-      if(foundTarget == null) {
-        foundTarget = ele ;
-      } else {
-        if(eXo.core.DOMUtil.hasAncestor(ele, foundTarget)) {
-          foundTarget = ele ;
-        }
-      } 
-    }
-  }
- 	
-  return foundTarget ;
-} ;
-  
-DragDrop.prototype.isIn = function(x, y, component) {
-  var componentLeft = eXo.core.Browser.findPosX(component);
-  var componentRight = componentLeft + component.offsetWidth ;
-  var componentTop = eXo.core.Browser.findPosY(component) ;
-  var componentBottom = componentTop + component.offsetHeight ;
-  var isOver = false ;
-
-  if((componentLeft < x) && (x < componentRight)) {
-    if((componentTop < y) && (y < componentBottom)) {
-      isOver = true ;
-    }
-  }
-  return isOver ;
-} ;
-
-DragDrop.prototype.isJunkMove = function(src, target) {
-  if(this.isJunkMoveCallback != null) {
-    return this.isJunkMoveCallback(src, target) ;
-  }
-  if(target == null) return true ;
-  return false ;
-} ;
+	DragDrop.prototype.start = function(e)	{
+		var o = obj = this;
+		var jRoot = gj(o.root);
+		
+		if((e.which && e.which != 1) || jRoot.data("dragging"))	{
+			return false;
+		}
+		var position = jRoot.position();
+		o.lastMouseX = e.pageX;
+		o.lastMouseY = e.pageY;
+		o.root.onDragStart(position.left, position.top, o.lastMouseX, o.lastMouseY, e);
+		gj(document).on({"mousemove" : eXo.core.DragDrop.drag,
+			"mouseup" : eXo.core.DragDrop.end,
+			"keydown" : eXo.core.DragDrop.onKeyDownEvt,
+			"mouseout" : eXo.core.DragDrop.cancel});
+		jRoot.data("dragging", true);
+		return false;
+	};
 	
-eXo.core.DragDrop = new DragDrop() ;
+	DragDrop.prototype.drag = function(e) {
+		var o = obj;
+		var ey = e.pageY;
+		var ex = e.pageX;
+		
+		var jRoot = gj(o.root);
+		var position = jRoot.position();
+		var y = position.top;
+		var x = position.left;
+
+		var nx, ny;
+		nx = x + (ex - o.lastMouseX);
+		ny = y + (ey - o.lastMouseY);
+		obj.root.style["right"] = "";
+		obj.root.style["left"] = nx + "px";
+		obj.root.style["top"] = ny + "px";
+		obj.lastMouseX = ex;
+		obj.lastMouseY = ey;
+
+		obj.root.onDrag(nx, ny, ex, ey, e);
+		return false;
+	};
+	
+	DragDrop.prototype.end = function(e) {
+		gj(document).off("mousemove mouseup mouseout keydown");
+		
+		var jRoot = gj(obj.root);
+		var position = jRoot.position();
+		var y = position.top;
+		var x = position.left;
+		
+		obj.root.onDragEnd( position.left, position.top, e.clientX, e.clientY, e);
+		obj = null;
+		jRoot.removeData("dragging");
+		return false;
+	};
+	
+	DragDrop.prototype.cancel = function(e) {
+		if(obj.root.onCancel) obj.root.onCancel(e);
+		return false;
+	};
+	
+	DragDrop.prototype.onKeyDownEvt = function(e) {
+		if(e.which === 27) eXo.core.DragDrop.end(e) ;
+		return false;
+	}
+};
+
+eXo.core.DragDrop = new DragDrop();
