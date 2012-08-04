@@ -370,5 +370,12 @@ public class TestMapper extends TestConfig
       
       RequestLifeCycle.end();
    }
+   
+   public PortalContainer getContainer()
+   {
+      String configurationFile="org/exoplatform/portal/config/TestMappings-configuration.xml";
+      String origin = "testMappings";
+      return getContainer(configurationFile, origin);
+   }
 }
 
