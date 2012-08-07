@@ -41,7 +41,22 @@ public class TestRedirect extends TestConfig
    String userAgentA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/500.0 (KHTML, like Gecko) TestBrowser/1.2.3 Safari/500.0";
    String userAgentB = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/500.0 (KHTML, like Gecko) TestBrowser/1.2.3 Safari/500.";  //One character difference
    
-   public void testNoRedirects()
+   //Hack since there is a memory leak somewhere with bootstrap.dispose and we are using an old
+   //version of junit which doesn't support @beforeClass and @afterClass annotations
+   public void testALL()
+   {
+      atestNoRedirects();
+      atestEmptyConditions();
+      atestAcceptAllUserAgents();
+      atestAcceptAllUserAgentsDisabled();
+      atestSimpleUserAgentRedirects();
+      atestSimpleUserAgentRedirectsDisabled();
+      atestUserAgentRedirects();
+      atestSimpleDevicePropertyRedirect();
+      atestDevicePropertyRedirects();
+   }
+   
+   public void atestNoRedirects()
    {
       PortalContainer container = getContainer();
       RequestLifeCycle.begin(container);
@@ -54,7 +69,7 @@ public class TestRedirect extends TestConfig
       RequestLifeCycle.end();
    }
    
-   public void testEmptyConditions()
+   public void atestEmptyConditions()
    {
       PortalContainer container = getContainer();
       RequestLifeCycle.begin(container);
@@ -68,7 +83,7 @@ public class TestRedirect extends TestConfig
       RequestLifeCycle.end();
    }
 
-   public void testAcceptAllUserAgents()
+   public void atestAcceptAllUserAgents()
    {
       String originName = "userAgentRedirectAll";
       PortalContainer container = getContainer();
@@ -99,7 +114,7 @@ public class TestRedirect extends TestConfig
       RequestLifeCycle.end();
    }
    
-   public void testAcceptAllUserAgentsDisabled()
+   public void atestAcceptAllUserAgentsDisabled()
    {
       String originName = "userAgentRedirectAllDisabled";
       PortalContainer container = getContainer();
@@ -131,7 +146,7 @@ public class TestRedirect extends TestConfig
       RequestLifeCycle.end();
    }
    
-   public void testSimpleUserAgentRedirects()
+   public void atestSimpleUserAgentRedirects()
    {
       PortalContainer container = getContainer();
       RequestLifeCycle.begin(container);
@@ -157,7 +172,7 @@ public class TestRedirect extends TestConfig
       RequestLifeCycle.end();
    }
    
-   public void testSimpleUserAgentRedirectsDisabled()
+   public void atestSimpleUserAgentRedirectsDisabled()
    {
       String originName = "simpleUserAgentRedirectDisabled";
       
@@ -185,7 +200,7 @@ public class TestRedirect extends TestConfig
       RequestLifeCycle.end();
    }
    
-   public void testUserAgentRedirects()
+   public void atestUserAgentRedirects()
    {
       String originName = "userAgentRedirect";
       PortalContainer container = getContainer();
@@ -216,7 +231,7 @@ public class TestRedirect extends TestConfig
       RequestLifeCycle.end();
    }
    
-   public void testSimpleDevicePropertyRedirect()
+   public void atestSimpleDevicePropertyRedirect()
    {
       String originName = "simpleDevicePropertyRedirect";
       PortalContainer container = getContainer();
@@ -243,7 +258,7 @@ public class TestRedirect extends TestConfig
       RequestLifeCycle.end();
    }
    
-   public void testDevicePropertyRedirects()
+   public void atestDevicePropertyRedirects()
    {
       String originName = "devicePropertyRedirect";
       PortalContainer container = getContainer();
@@ -293,9 +308,7 @@ public class TestRedirect extends TestConfig
       assertEquals(RedirectType.REDIRECT, redirectKey.getType());
       assertEquals("redirectC", redirectKey.getRedirect());
       
-      
       RequestLifeCycle.end();
-      bootstrap.dispose();
    }
    
    public Map<String, String> createEmptyPropertyMap()

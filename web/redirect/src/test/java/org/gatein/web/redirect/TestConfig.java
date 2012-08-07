@@ -80,6 +80,7 @@ public abstract class TestConfig extends AbstractGateInTest
          System.clearProperty(key);
       }
       sysProperties.clear();
+      bootstrap.dispose();
    }
 }
 
