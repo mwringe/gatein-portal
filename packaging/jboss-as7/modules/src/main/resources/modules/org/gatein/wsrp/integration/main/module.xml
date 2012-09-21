@@ -25,6 +25,8 @@
 <module xmlns="urn:jboss:module:1.0" name="org.gatein.wsrp.integration">
     <resources>
        <!-- Insert resources here -->
+       <resource-root path="../../../../../../../standalone/configuration/gatein/wsrp/cxf/ws-security/consumer"/>
+       <resource-root path="../../../../../../../standalone/configuration/gatein/wsrp/cxf/ws-security/producer"/>
     </resources>
 
     <dependencies>
