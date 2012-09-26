@@ -38,7 +38,7 @@
    </component>
 
    <component>
-      <type>org.gatein.integration.wsrp.wss.CXFWSSServiceIntegration</type>
+      <type>org.gatein.integration.wsrp.wss.CXFWSServiceIntegration</type>
    </component>
 
 </configuration>
