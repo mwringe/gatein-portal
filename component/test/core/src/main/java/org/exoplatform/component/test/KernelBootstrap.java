@@ -74,7 +74,7 @@ public class KernelBootstrap
       configs.put(ContainerScope.PORTAL, portalConfigPaths);
 
       //
-      File targetDir = new File(new File(System.getProperty("basedir")), "target");
+      File targetDir = new File(System.getProperty("gatein.test.output.path"));
       if (!targetDir.exists())
       {
          throw new AssertionFailedError("Target dir for unit test does not exist");
@@ -87,7 +87,6 @@ public class KernelBootstrap
       {
          throw new AssertionFailedError("Target dir is not writable");
       }
-
 
       //
       this.configs = configs;
@@ -167,7 +166,7 @@ public class KernelBootstrap
       configs.get(scope).add(path);
    }
 
-   public void addConfiguration(ConfigurationUnit unit)
+   private void addConfiguration(ConfigurationUnit unit)
    {
       addConfiguration(unit.scope(), unit.path());
    }
@@ -232,7 +231,7 @@ public class KernelBootstrap
             configs.get(ContainerScope.PORTAL));
          Thread.currentThread().setContextClassLoader(testClassLoader);
 
-         // Boot the container
+         // Boot the container, this will associate the current thread with the portal container
          this.container = PortalContainer.getInstance();
       }
       catch (Exception e)
