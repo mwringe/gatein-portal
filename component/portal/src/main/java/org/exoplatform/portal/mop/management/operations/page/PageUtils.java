@@ -17,9 +17,11 @@ import org.exoplatform.portal.config.model.PortalConfig;
 import org.exoplatform.portal.config.model.Properties;
 import org.exoplatform.portal.config.model.TransientApplicationState;
 import org.exoplatform.portal.mop.SiteKey;
+import org.exoplatform.portal.mop.page.PageState;
 import org.gatein.management.api.exceptions.OperationException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -59,6 +61,12 @@ public class PageUtils
       }
    }
 
+   public static PageState toPageState(Page page)
+   {
+      return new PageState(page.getTitle(), page.getDescription(), page.isShowMaxWindow(),page.getFactoryId(),
+         page.getAccessPermissions() != null ? Arrays.asList(page.getAccessPermissions()) : null, page.getEditPermission());
+   }
+   
    public static <S> Application<S> copy(Application<S> existing)
    {
       Application<S> application = new Application<S>(existing.getType());
