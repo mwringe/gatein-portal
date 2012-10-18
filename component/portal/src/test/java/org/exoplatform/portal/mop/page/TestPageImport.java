@@ -22,6 +22,13 @@
 
 package org.exoplatform.portal.mop.page;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.exoplatform.portal.config.DataStorage;
 import org.exoplatform.portal.config.model.ApplicationState;
 import org.exoplatform.portal.config.model.ApplicationType;
@@ -36,16 +43,7 @@ import org.exoplatform.portal.pom.spi.portlet.Portlet;
 import org.exoplatform.portal.pom.spi.portlet.Preference;
 import org.gatein.mop.api.workspace.ObjectType;
 import org.gatein.mop.api.workspace.Site;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 
 /*
@@ -56,72 +54,24 @@ public class TestPageImport extends AbstractTestPageService
    @Test
    public void testSave() throws Exception
    {
+      DataStorage ds = getComponent(DataStorage.class);
       Site site = mgr.getPOMService().getModel().getWorkspace().addSite(ObjectType.PORTAL_SITE, "import_pages");
       site.getRootPage().addChild("pages");
       sync(true);
 
       int numberOfPages = Integer.parseInt(System.getProperty("numberOfPages", "25"));
-      Map<Page, PageContext> pageMap = createPageContexts(createPages(numberOfPages));
+      Map<Page, PageContext> pageMap = createPageContexts(createPages(numberOfPages, "import_pages"));
       
       long start = System.currentTimeMillis();
       createAndSavePages(pageMap);
-      sync(true);
-
       long end = System.currentTimeMillis();
-      System.out.println("Time to SAVE " + numberOfPages + " pages : " + (end - start));
-      site.destroy();
-   }
+      System.out.println("Time to save " + numberOfPages + " pages : " + (end - start));
+      
+      long saveStart = System.currentTimeMillis();
+      ds.save();
+      long saveStop = System.currentTimeMillis();
    
-   @Test
-   public void testLoadPage() throws Exception
-   {
-      Site site = mgr.getPOMService().getModel().getWorkspace().addSite(ObjectType.PORTAL_SITE, "load_pages");
-      site.getRootPage().addChild("pages");
-      sync(true);
-
-      //create and save the pages so we can test the time it takes to load them
-      int numberOfPages = Integer.parseInt(System.getProperty("numberOfPages", "25"));
-      Map<Page, PageContext> pageMap = createPageContexts(createPages(numberOfPages));
-      createAndSavePages(pageMap);
-      
-      long start = System.currentTimeMillis();
-      for (Page page: pageMap.keySet())
-      {
-         PageContext pageContext = service.loadPage(page.getPageKey());
-         assertNotNull(pageContext);
-         assertEquals(page.getPageKey(), pageContext.getKey());
-         assertEquals(pageMap.get(page).getState(), pageContext.getState());
-      }
-      sync(true);
-
-      long end = System.currentTimeMillis();
-      System.out.println("Time to LOAD " + numberOfPages + " pages : " + (end - start));
-      site.destroy();
-   }
-   
-   @Test
-   public void testDestroyPage() throws Exception
-   {
-      Site site = mgr.getPOMService().getModel().getWorkspace().addSite(ObjectType.PORTAL_SITE, "destroy_pages");
-      site.getRootPage().addChild("pages");
-      sync(true);
-
-      //create and save the pages so we can test the time it takes to destroy them
-      int numberOfPages = Integer.parseInt(System.getProperty("numberOfPages", "25"));
-      Map<Page, PageContext> pageMap = createPageContexts(createPages(numberOfPages));
-      createAndSavePages(pageMap);
-      
-      long start = System.currentTimeMillis();
-      for (Page page: pageMap.keySet())
-      {
-         boolean result = service.destroyPage(page.getPageKey());
-         assertTrue(result);
-      }
-      sync(true);
-
-      long end = System.currentTimeMillis();
-      System.out.println("Time to DESTROY " + numberOfPages + " pages : " + (end - start));
-      site.destroy();
+      System.out.println("DataStorage.save(): " + (saveStop - saveStart));
    }
    
    protected void createAndSavePages(Map<Page, PageContext> pageMap) throws Exception
@@ -134,10 +84,10 @@ public class TestPageImport extends AbstractTestPageService
       }
    }
 
-   protected List<Page> createPages(int numPages)
+   protected List<Page> createPages(int numPages, String siteName)
    {
       List<Page> pages = new ArrayList<Page>();
-      SiteKey siteKey = SiteKey.portal("import_pages");
+      SiteKey siteKey = SiteKey.portal(siteName);
       for (int i = 0; i < numPages; i++)
       {
          PageKey pageKey = siteKey.page("page"+i);
