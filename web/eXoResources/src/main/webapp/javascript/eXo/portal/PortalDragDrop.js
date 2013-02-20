@@ -70,7 +70,14 @@
 			}
 				
 		    //use this when press ESC with firefox (cancel dragdrop in column container)
-		    jDragObj.data("backupParentSibling", jDragObj.parent().next("td"));	  
+                    if (jDragObj.parent().next(".InlineContainer").length)
+                    {
+                       jDragObj.data("backupParentSibling", jDragObj.parent().next(".InlineContainer"));
+                    }
+                    else 
+                    {
+                       jDragObj.data("backupParentSibling", jDragObj.parent().next(".TDContainer"));
+                    }
 		    var backupDragObjectWidth = dragObject.offsetWidth;
 		        
 		    var componentBlockWidth = 300;
@@ -144,7 +151,7 @@
 		     PortalDragDrop.layoutTypeElementNode = layoutTypeElement;
 		    
 		     if(previewBlock == null) previewBlock = PortalDragDrop.createPreview();	    	     
-		     if(layoutTypeElement != null && !$(layoutTypeElement).hasClass("UITableColumnContainer")) {
+		     if(layoutTypeElement != null && !$(layoutTypeElement).hasClass("UITableColumnContainer") && !$(layoutTypeElement).hasClass("UIInlineRow")) {
 		      /* ===============================CASE ROW LAYOUT================================ */
 		      var rowContainer = jTarget.find(".UIRowContainer").first();
 		      var listComponent = rowContainer.children("div").filter(function() {
@@ -163,7 +170,28 @@
 		      } else {
 		        rowContainer[0].appendChild(previewBlock);
 		      }
-		    } else {
+                    } else if ($(layoutTypeElement).hasClass("UIInlineRow")) {
+                      /* ===============================CASE INLINE ROW LAYOUT================================ */
+                      layoutTypeElement = null;
+                      PortalDragDrop.layoutTypeElementNode = null;
+                      var inlineRow = jTarget.find(".UIInlineRow").first();
+                      var listComponent = inlineRow.children(".InlineContainer").filter(function() {
+                         return this != previewBlock.parentNode && this != dragObject.parentNode;
+                      });
+
+                      jDragObj.data("listComponentInTarget", listComponent);
+                      var insertPosition = eXo.portal.PortalDragDrop.findInsertPosition(listComponent, "row", ey);
+                      if (jDragObj.data("foundTargetObject") === jDragObj.data("lastFoundTargetObject") &&
+                                  insertPosition === jDragObj.data("foundIndex")) return;
+                      jDragObj.data("foundIndex", insertPosition);
+
+                      /* Insert preview block */
+                      if(insertPosition >= 0) {
+                          inlineRow[0].insertBefore(dragObject.parentNode, listComponent[insertPosition]);
+                       } else {
+                          inlineRow[0].appendChild(dragObject.parentNode);
+                       }
+                    } else {
 		      /* ===============================CASE COLUMN LAYOUT================================ */
 		      var trContainer = jTarget.find(".TRContainer").first();
 		      var listComponent = trContainer.children("td").filter(function() {
@@ -209,14 +237,22 @@
 	//			 Case RowContainer : When dragobject is next to preview object (position is not changed)
 	//		    Case ColumnContainer : When dragObject.parent's lastSibling doesn't change
 		  	if(!dragObject.isAddingNewly) {
-		      if (dragObject.parentNode.tagName.toLowerCase() == "td") {
+		      if ($(dragObject).parent().hasClass("TDContainer")) {
 		        //Column Container
 		        var backupParentSibling = jDragObj.data("backupParentSibling"); 
-		        var currSibling = jDragObj.parent().next("td");
+		        var currSibling = jDragObj.parent().next(".TDContainer");
 		        if ((backupParentSibling.length == 0 && currSibling.length == 0) || 
 		        		currSibling[0] == backupParentSibling[0]) {
 		          hasChanged = false;          
 		        }
+                      } else if ($(dragObject).parent().hasClass("InlineContainer")){
+                        //Inline Container
+                        var backupParentSibling = jDragObj.data("backupParentSibling");
+                        var currSibling = jDragObj.parent().next(".InlineContainer");
+                        if ((backupParentSibling == 0 && currSibling.length == 0) ||
+                                        currSibling[0] == backupParentSibling[0]) {
+                          hasChanged = false;
+                        }
 		      } else {
 		        //RowContainer
 		    	var next = jDragObj.next("div.DragAndDropPreview");
@@ -236,7 +272,7 @@
 		    	eXo.portal.PortalDragDrop.doDropCallback(dragObject);
 		    } else {
 		      //When click ESC, restore dragObject's last position
-		      if (dragObject.parentNode && dragObject.parentNode.tagName.toLowerCase() == "td") {
+		      if (dragObject.parentNode && $(dragObject).parent().hasClass("TDContainer")) {
 		        var tdNode = dragObject.parentNode;
 		        var lastSibling = jDragObj.data("backupParentSibling");
 		        if (lastSibling.length == 0) {
@@ -245,6 +281,16 @@
 		          tdNode.parentNode.insertBefore(tdNode, lastSibling[0]);
 		        }
 		      }
+                     else if (dragObject.parentNode && $(dragObject).parent().hasClass("InlineContainer")) {
+                        var inlineContainerNode = dragObject.parentNode;
+                        var lastSibling = jDragObj.data("backupParentSibling");
+                        if (lastSibling.length == 0) {
+                          inlineContainerNode.parentNode.appendChild(inlineContainerNode);
+                        } else {
+                          inlineContainerNode.parentNode.insertBefore(inlineContainerNode, lastSibling[0]);
+                        }
+                      }
+
 		      
 		      if(dragObject.isAddingNewly) {
 				dragObject.parentNode.removeChild(dragObject);
@@ -341,6 +387,11 @@
 		    dropableTargets.push(uiTableContainer[0]);
 		    return dropableTargets;
 		  }
+             else if (jDragObj.hasClass("UIInlineContainer")) {
+                    var uiInlineContainer = jDragObj.closest(".UIInlineRowContainer");
+                    dropableTargets.push(uiInlineContainer[0]);
+                    return dropableTargets;
+                  }
 	
 	      var toolPanel = $("#UIPortalToolPanel");
 		  var uiPortal = toolPanel.find(".UIPortal");
@@ -356,7 +407,8 @@
 			 var jCont = $(this);
 			 if (!jCont.closest(jDragObj).length && 
 					 !jCont.hasClass("ProtectedContainer") &&
-					 !jCont.hasClass("UITableColumnContainer")) {
+					 !jCont.hasClass("UITableColumnContainer") &&
+                                         !jCont.hasClass("UIInlineRowContainer")) {
 				 dropableTargets.push(this) ;
 			 }  
 		  });
@@ -482,7 +534,7 @@
 			
 		  uiRowContainer.removeClass("EmptyContainer");
 		  
-		  if(parentNode.nodeName.toLowerCase() == "td") {
+		  if($(parentNode).hasClass("TDContainer") || $(parentNode).hasClass("InlineContainer")  ) {
 		  	$(parentNode).remove();
 		  }
 		}

@@ -146,4 +146,25 @@ import org.exoplatform.webui.core.model.SelectItemOption ;
         "OneRow2Column1RowContainerLayout")) ;
   templates.add(mixed);
 
+  SelectItemCategory inlineRow = new SelectItemCategory("InlineRow");
+    inlineRow.addSelectItemOption(new SelectItemOption("oneRowInline",
+        "<container template=\"system:/groovy/portal/webui/container/UIInlineRowContainer.gtmpl\">" +
+        "  <container template=\"system:/groovy/portal/webui/container/UIInlineContainer.gtmpl\"><factory-id>InlineContainer</factory-id></container>" +
+        "</container>",
+        "OneRowContainerLayout"));
+    inlineRow.addSelectItemOption(new SelectItemOption("twoRowInline",
+        "<container template=\"system:/groovy/portal/webui/container/UIInlineRowContainer.gtmpl\">" +
+        "  <container template=\"system:/groovy/portal/webui/container/UIInlineContainer.gtmpl\"><factory-id>InlineContainer</factory-id></container>" +
+        "  <container template=\"system:/groovy/portal/webui/container/UIInlineContainer.gtmpl\"><factory-id>InlineContainer</factory-id></container>" +
+        "</container>",
+        "TwoRowContainerLayout"));
+    inlineRow.addSelectItemOption(new SelectItemOption("threeRowInline",
+        "<container template=\"system:/groovy/portal/webui/container/UIInlineRowContainer.gtmpl\">" +
+        "  <container template=\"system:/groovy/portal/webui/container/UIInlineContainer.gtmpl\"><factory-id>InlineContainer</factory-id></container>" +
+        "  <container template=\"system:/groovy/portal/webui/container/UIInlineContainer.gtmpl\"><factory-id>InlineContainer</factory-id></container>" +
+        "  <container template=\"system:/groovy/portal/webui/container/UIInlineContainer.gtmpl\"><factory-id>InlineContainer</factory-id></container>" +
+        "</container>",
+        "ThreeRowContainerLayout"));
+  templates.add(inlineRow); 
+
 return templates;

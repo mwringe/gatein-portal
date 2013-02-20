@@ -1,0 +1,126 @@
+<%
+	import org.exoplatform.commons.utils.ExpressionUtil;
+	import org.exoplatform.portal.webui.workspace.UIPortalApplication;
+	import org.exoplatform.webui.core.UIComponent;
+	import org.exoplatform.commons.utils.HTMLEntityEncoder;
+	
+	def rcontext = _ctx.getRequestContext();
+	ResourceBundle res = rcontext.getApplicationResourceBundle();
+	
+	UIPortalApplication uiPortalApp = rcontext.getUIApplication();
+	boolean hasPermission = uicomponent.hasPermission();
+	if(!uiPortalApp.isEditing() && !hasPermission) return;
+
+	String cssStyle = "";
+	String uiComponentWidth = uicomponent.getWidth();
+	String uiComponentHeight = uicomponent.getHeight();
+	if(uiComponentWidth != null || uiComponentHeight != null) cssStyle = "style=\"";
+	if(uiComponentWidth != null) cssStyle += "width: "+uiComponentWidth+";"
+	if(uiComponentHeight != null) cssStyle += "height: "+uiComponentHeight+";"
+	if(cssStyle.length() > 0) cssStyle += "\"";
+	
+	/** Trim the prefix UIContainer- if any, this hardcoded part is needed to update nested container via Ajax */
+	String componentId = uicomponent.getId();
+	if(componentId.startsWith("UIContainer-")){
+		uicomponent.setId(componentId.substring("UIContainer-".length()));
+	}
+
+  if (uiPortalApp.isEditing())
+  {
+     def reqJS = rcontext.getJavascriptManager().require("SHARED/portal", "portal");
+     reqJS.addScripts("portal.UIPortal.initMouseHover('" + uicomponent.id + "');");
+%>  
+<div class="UIContainer UIInlineContainer EdittingContainer <%=hasPermission?"": "ProtectedContainer"%>" 
+				id="${uicomponent.id}" ${cssStyle}>
+<%
+  }
+  else
+  {   
+%>
+<div class="UIContainer UIInlineContainer inline <%=hasPermission?"": "ProtectedContainer"%>" 
+        id="${uicomponent.id}" ${cssStyle}>
+<%
+  }
+%>
+			<%
+				int portalMode = uiPortalApp.getModeState();
+				if(portalMode == uiPortalApp.CONTAINER_BLOCK_EDIT_MODE || portalMode == UIPortalApplication.APP_BLOCK_EDIT_MODE){
+			%>
+                                <div class="NormalContainerBlock UIComponentBlock">
+				<div class="LAYOUT-CONTAINER LAYOUT-BLOCK">
+                                 <%if(hasPermission) {%>
+                                                <div>
+                                                  <div class="UIRowContainer <%=(portalMode != UIPortalApplication.NORMAL_MODE && uicomponent.getChildren().size() == 0) ? "EmptyContainer" : ""%>">
+                                                                <%uicomponent.renderChildren();%>
+                                                  </div>
+                                                </div>
+                                                <%} else out.print("<div class='ProtectedContent'>"+_ctx.appRes("UIPortlet.label.protectedContent")+"</div>");%>
+                                </div>
+			<%} else {%>
+                                <div class="NormalContainerBlock UIComponentBlock inline">
+				<div class="VIEW-CONTAINER VIEW-BLOCK inline">
+			        <%if(hasPermission) {%>
+ 						<div class="inline">								
+						  <div class="UIRowContainer inline <%=(portalMode != UIPortalApplication.NORMAL_MODE && uicomponent.getChildren().size() == 0) ? "EmptyContainer" : ""%>">
+								<%uicomponent.renderChildren();%>
+						  </div>
+						</div>
+						<%} else out.print("<div class='ProtectedContent inline'>"+_ctx.appRes("UIPortlet.label.protectedContent")+"</div>");%>
+				</div>
+                        <%} %>				
+			<%if(portalMode != UIPortalApplication.NORMAL_MODE){%>
+				<div class="EDITION-BLOCK EDITION-CONTAINER" style="position: relative; display: none;">
+
+						<div style="position: absolute; top: -86px;">
+
+							<div class="NewLayer" style="display: none; visibility: hidden;"><span></span></div>
+							<div class="CONTROL-CONTAINER CONTROL-BLOCK UIInfoBar" style="position: absolute; top: -6px;">
+								<%/*Begin InfoBar*/%>
+									<div class="BlueRoundedStyle FixHeight ClearFix">
+
+										<span class="DragControlArea" title="<%=_ctx.appRes("UIInlineContainer.title.DragControlArea")%>"></span>
+										<% 
+											String strTitle = uicomponent.getTitle() != null ?
+														ExpressionUtil.getExpressionValue(res, uicomponent.getTitle()) :
+														_ctx.appRes("UIInlineContainer.title.Container");
+											strTitle = hasPermission ? strTitle : _ctx.appRes("UIPortlet.label.protectedContent");
+										%>
+										<div class="ContainerIcon"><%=HTMLEntityEncoder.getInstance().encode(strTitle)%></div>
+										<%if(hasPermission) {
+										   rcontext.getJavascriptManager().require("SHARED/popupCategory", "popup")
+										   		  .addScripts("popup.init('" + uicomponent.id + "');");
+										%>
+											<div class="ContainerControlIcon ContainerArrowDownIcon" title="<%= _ctx.appRes("UIInlineContainer.tooltip.insertInlineContainer") %>">
+												<% /*Begin Popup Menu*/ %>
+												<div style="position: relative; width: 100%">
+													<div class="UIPopupCategory" style="display: none;">
+														<div class="PopupCategoryDecorator">
+		
+															<a class="CategoryItem" href="<%= uicomponent.event("InsertInlineContainer", org.exoplatform.portal.webui.container.UIInlineContainer.INSERT_BEFORE) %>"  title="<%= _ctx.appRes("UIInlineContainer.tooltip.insertLeft") %>">
+																<div class="CategoryItemLabel"><%= _ctx.appRes("UIInlineContainer.label.insertLeft") %></div>
+															</a>
+															<a class="CategoryItem" href="<%= uicomponent.event("InsertInlineContainer", org.exoplatform.portal.webui.container.UIInlineContainer.INSERT_AFTER) %>"  title="<%= _ctx.appRes("UIInlineContainer.tooltip.insertRight") %>">
+																<div class="CategoryItemLabel"><%= _ctx.appRes("UIInlineContainer.label.insertRight") %></div>
+															</a>
+
+														</div>
+													</div>
+												</div>
+												<% /*End Popup Menu*/ %>
+											</div>
+											<a href="<%=uicomponent.event("EditContainer")%>" class="EditIcon" title="<%=_ctx.appRes("UIInlineContainer.tooltip.editContainer")%>"><span></span></a>
+											<a href="<%=uicomponent.event("DeleteComponent")%>" class="DeleteIcon" title="<%=_ctx.appRes("UIInlineContainer.tooltip.closeContainer")%>"><span></span></a>
+											
+										<%}%>
+		
+									</div>
+								<%/*End InfoBar*/ %>
+							</div>
+							
+						</div>
+
+				</div>	
+			<%} %>
+
+	</div> 
+</div>
