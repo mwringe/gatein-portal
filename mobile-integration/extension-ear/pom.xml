@@ -51,6 +51,11 @@
         </dependency>
         <dependency>
             <groupId>org.gatein.portal</groupId>
+            <artifactId>portlet.responsive.community</artifactId>
+            <type>war</type>
+        </dependency>
+        <dependency>
+            <groupId>org.gatein.portal</groupId>
             <artifactId>mobile-extension-configuration</artifactId>
             <type>war</type>
         </dependency>
@@ -110,6 +115,13 @@
                             <artifactId>portlet.responsive.navigation</artifactId>
                             <contextRoot>/responsive-navigation-portlet</contextRoot>
                             <bundleFileName>responsive-navigation-portlet.war</bundleFileName>
+                            <unpack>true</unpack>
+                        </webModule>
+                        <webModule>
+                            <groupId>org.gatein.portal</groupId>
+                            <artifactId>portlet.responsive.community</artifactId>
+                            <contextRoot>/responsive-community-portlet</contextRoot>
+                            <bundleFileName>responsive-community-portlet.war</bundleFileName>
                             <unpack>true</unpack>
                         </webModule>
                         <webModule>
