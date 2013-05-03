@@ -37,20 +37,22 @@
                         <c:when test="${blogRSSBean.valid}">
                             <ul>
                                 <c:forEach var="blogArticle" items="${blogRSSBean.feedTitles}">
-                                    <h6>
-                                        <a href="${blogArticle.link}">${blogArticle.title}</a>
-                                    </h6>
-                                    <div class="info">
-                                        <span>
-                                            <c:forEach var="author" items="${blogArticle.authors}">
-                                                <a href="${blogRSSBean.authorUrlPrefix}${author.uri}">${author.name}</a>
-                                            </c:forEach>
-                                        </span>
-
-                                        <span>
-                                            <fmt:formatDate value="${blogArticle.publishedDate}" pattern="dd MMM" />
-                                        </span>
-                                    </div>
+                                    <li>
+                                        <h6>
+                                            <a href="${blogArticle.link}">${blogArticle.title}</a>
+                                        </h6>
+                                        <div class="info">
+                                            <span>
+                                                <c:forEach var="author" items="${blogArticle.authors}">
+                                                    <a href="${blogRSSBean.authorUrlPrefix}${author.uri}">${author.name}</a>
+                                                </c:forEach>
+                                            </span>
+    
+                                            <span>
+                                                <fmt:formatDate value="${blogArticle.publishedDate}" pattern="dd MMM" />
+                                            </span>
+                                        </div>
+                                    </li>
                                 </c:forEach>
                             </ul>
                             <a href="${blogRSSBean.contentSource}">${resourceBundle.getString("conversation.blog.link")}</a>
@@ -75,7 +77,7 @@
                             <ul>
                                 <c:forEach var="twitterTweet" items="${twitterRSSBean.feedTitles}">
                                     <li>
-                                        <a href="${twitterTweet.link}">${twitterTweet.title}</a>
+                                        <h6><a href="${twitterTweet.link}">${twitterTweet.title}</a></h6>
                                         <div class="info">
                                             <span>
                                                 <fmt:formatDate value="${twitterTweet.publishedDate}" pattern="dd MMM" />
