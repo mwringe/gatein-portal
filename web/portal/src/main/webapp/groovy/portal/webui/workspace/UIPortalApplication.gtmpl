@@ -110,9 +110,30 @@
 		    }
 		 }		 
 		%>
-		<style type="text/css">
-                  .skipHidden { position:absolute !important; left:-10000px !important; top:auto !important; width:1px !important; height:1px !important; overflow:hidden !important; }
-		</style>
+                <!-- 508 Compliancy -->
+                <style type="text/css">
+                  .skipHidden { 
+                     position:absolute !important;
+                     left:-10000px !important;
+                     top:auto !important; 
+                     width:1px !important; 
+                     height:1px !important; 
+                     overflow:hidden !important; }
+
+                  html[dir="rtl"] .skipHidden {
+                     right: -10000px !important;
+                     left: auto !important; */
+                  }
+                </style>
+                <!-- The android browser on 2.3.x doesn't properly handle rtl so we need to handle this special situation -->
+                <script type="text/javascript">
+                     if (document.documentElement.getAttribute("dir") == "rtl" && navigator && navigator.userAgent && navigator.userAgent.indexOf("Android 2.3") >= 0) {
+                        var stylesheet = document.styleSheets[document.styleSheets.length - 1];
+                        stylesheet.insertRule("html[dir='rtl'] .skipHidden { right: 10000px !important;}", stylesheet.cssRules.length);
+                     }
+                </script>
+                <!-- /508 Compliancy -->
+
 	</head>
 
 	<body style="height: 100%;">
