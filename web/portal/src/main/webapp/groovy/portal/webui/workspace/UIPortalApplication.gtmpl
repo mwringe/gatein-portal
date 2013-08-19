@@ -125,12 +125,17 @@
                      left: auto !important; */
                   }
                 </style>
-                <!-- The android browser on 2.3.x doesn't properly handle rtl so we need to handle this special situation -->
+                <!-- The android browser on 2.3.x doesn't properly handle rtl so we need to handle this special situation.
+                     This old browser it expects right to be positive instead of negative in order to hide the content instead of displaying it.
+                     If the page is over 10000px wide and rtl we assume this situation. -->
                 <script type="text/javascript">
-                     if (document.documentElement.getAttribute("dir") == "rtl" && navigator && navigator.userAgent && navigator.userAgent.indexOf("Android 2.3") >= 0) {
-                        var stylesheet = document.styleSheets[document.styleSheets.length - 1];
-                        stylesheet.insertRule("html[dir='rtl'] .skipHidden { right: 10000px !important;}", stylesheet.cssRules.length);
-                     }
+                     window.onload = checkRTLWidth;
+                     function checkRTLWidth() {
+                       if (document.documentElement && document.documentElement.getAttribute("dir") == "rtl" && document.body.scrollWidth >= 10000) {
+                          var stylesheet = document.styleSheets[document.styleSheets.length - 1];
+                          stylesheet.insertRule("html[dir='rtl'] .skipHidden { right: 10000px !important;}", stylesheet.cssRules.length);
+                       }
+                    }
                 </script>
                 <!-- /508 Compliancy -->
 
