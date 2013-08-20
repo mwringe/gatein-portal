@@ -122,7 +122,7 @@
 
                   html[dir="rtl"] .skipHidden {
                      right: -10000px !important;
-                     left: auto !important; */
+                     left: auto !important;
                   }
                 </style>
                 <!-- The android browser on 2.3.x doesn't properly handle rtl so we need to handle this special situation.
