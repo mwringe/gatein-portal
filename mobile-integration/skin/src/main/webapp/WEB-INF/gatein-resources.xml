@@ -67,4 +67,13 @@
         <css-path>/skin/ResponsiveSkin/portlet/webui/UIHomePagePortlet/UIHomePagePortlet.css</css-path>
     </portlet-skin>
 
+    <!-- IFramePortlet skins -->
+        <portlet-skin>
+        <application-name>web</application-name>
+        <portlet-name>IFramePortlet</portlet-name>
+        <skin-name>ResponsiveSkin</skin-name>
+        <css-path>/skin/ResponsiveSkin/portlet/webui/UIIFramePortlet/UIIFramePortlet.css</css-path>
+    </portlet-skin>
+
+
 </gatein-resources>
